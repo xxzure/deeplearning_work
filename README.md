@@ -18,6 +18,27 @@ https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data
 2、制作大作业汇报PPT；
 3、联系助教进行现场作业检查；
 
+## Configuration
+python 3.6.5
+
+具体参考文件[“requirements.txt”](requirements.txt)
+
+```shell
+# 自动生成环境依赖
+pip install pipreqs
+pipreqs . --force
+```
+```shell
+# 安装依赖的包
+pip install -r requirements.txt
+```
+
+```shell
+# 运行代码，建议使用 conda 环境运行
+python train_test.py
+```
+
+
 ## Models
 
 ### TextCNN

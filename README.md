@@ -3,7 +3,9 @@
 ## Assignment Description
 
 Toxic Comment Classification Challenge
+
 Identify and classify toxic online comments
+
 【任务说明】 
 1、这是一个Kaggle上的比赛项目，相关信息参考如下：
 https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge
@@ -28,6 +30,7 @@ python 3.6.5
 pip install pipreqs
 pipreqs . --force
 ```
+
 ```shell
 # 安装依赖的包
 pip install -r requirements.txt

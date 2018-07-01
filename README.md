@@ -9,7 +9,8 @@ Identify and classify toxic online comments
 【任务说明】 
 
 1、这是一个Kaggle上的比赛项目，相关信息参考如下：
-https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge
+
+<https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge>
 
 2、主要依赖的技术是对自然语言语句进行分类；
 
@@ -17,7 +18,7 @@ https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge
 
 数据集及相关说明请参考：
 
-https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data
+<https://www.kaggle.com/c/jigsaw-toxic-comment-classification-challenge/data>
 
 【提交时间
 

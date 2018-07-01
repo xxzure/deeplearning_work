@@ -2,6 +2,8 @@ import pandas as pd
 import tensorflow as tf
 
 import models.textCNN as textCNN
+import models.textRNN as textRNN
+import models.textRCNN as textRCNN
 from data import data_process
 
 if __name__ == '__main__':
@@ -17,7 +19,10 @@ if __name__ == '__main__':
     train_op = optimizer.apply_gradients(grads_and_vars, global_step=global_step)
     auc = tf.metrics.auc(net.Y, net.p)
 
-    sess = tf.Session()
+    # allow gpu growth increase dynamically
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
     sess.run(tf.global_variables_initializer())
     sess.run(tf.local_variables_initializer())
 
@@ -33,11 +38,12 @@ if __name__ == '__main__':
             step, val_batch_loss, auc_value = sess.run([global_step, loss, auc],feed_dict={net.X: x_valid, net.Y: y_valid, net.keep:1})
             print("val-loss:", batch_loss, "auc:", auc_value)
 
-    submission = pd.read_csv('sample_submission.csv')
+    
+    submission = pd.read_csv('data/sample_submission.csv')
     test_batches = data_process.batch_iter("test", batch_size, 1, shuffle=False)
     for batch in test_batches:
         x_batch = zip(*batch)
         y_pred = sess.run(net.p,feed_dict={net.X: x_batch, net.keep: 1})
         submission[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
-    submission.to_csv('submission.csv', index=False)
+    submission.to_csv('data/submission.csv', index=False)
     sess.close()

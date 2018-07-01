@@ -1,7 +1,8 @@
-from models import textCNN
-from data import data_process
-import tensorflow as tf
 import pandas as pd
+import tensorflow as tf
+
+import models.textCNN as textCNN
+from data import data_process
 
 if __name__ == '__main__':
     batch_size = 256

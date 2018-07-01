@@ -3,8 +3,13 @@ import numpy as np
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 
-train = pd.read_csv('train.csv')
-test = pd.read_csv('test.csv')
+import os 
+import sys
+
+module_path = os.path.dirname(__file__)
+
+train = pd.read_csv( module_path+'/train.csv')
+test = pd.read_csv( module_path+'/test.csv')
 
 X_train = train["comment_text"].fillna("fillna").values
 y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]].values
@@ -48,7 +53,7 @@ def get_coefs(word, *arr):
     return word, np.asarray(arr, dtype='float32')
 
 def get_embedding():
-    EMBEDDING_FILE = 'crawl-300d-2M.vec'
+    EMBEDDING_FILE = module_path+'/crawl-300d-2M.vec'
     embeddings_index = dict(get_coefs(*o.rstrip().rsplit(' ')) for o in open(EMBEDDING_FILE))
     word_index = tokenizer.word_index
     nb_words = min(max_features, len(word_index))

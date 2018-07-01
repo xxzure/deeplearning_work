@@ -142,3 +142,5 @@ GitHub.sublime-settings
 
 .DS_Store
 .DS_Store/*
+
+data/

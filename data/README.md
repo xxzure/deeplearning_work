@@ -19,4 +19,6 @@ sample_submission.csv - a sample submission file in the correct format
 
 test_labels.csv - labels for the test data; value of -1 indicates it was not used for scoring; (Note: file added after competition close!)
 
+crawl-300d-2M.vec.zip 2 million word vectors trained on Common Crawl (600B tokens).Download Link: <https://s3-us-west-1.amazonaws.com/fasttext-vectors/crawl-300d-2M.vec.zip>
+
 

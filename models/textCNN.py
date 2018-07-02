@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 class TextCNN():
-    def __init__(self, W_list, num_filters=32):
+    def __init__(self, W_list, num_filters=64):
         self.X = tf.placeholder(tf.int32, [None, 200])
-        self.Y = tf.placeholder(tf.int64, [None, 6])
+        self.Y = tf.placeholder(tf.float32, [None, 6])
         self.keep = tf.placeholder(tf.float32)
 
         filter_sizes = [1, 2, 3, 5]
@@ -11,7 +11,7 @@ class TextCNN():
         embedding = tf.Variable(initial_value=W_list, dtype=tf.float32, trainable=True)
         embed = tf.nn.embedding_lookup(embedding, self.X)
         inputs = tf.expand_dims(embed, -1)
-        inputs = tf.nn.dropout(inputs, keep_prob=self.keep)
+        inputs = tf.nn.dropout(inputs, self.keep)
 
         for filter_size in filter_sizes:
             feature_length = 200 - filter_size + 1
@@ -25,13 +25,11 @@ class TextCNN():
 
         pooled_concat = tf.concat(pool_concat, -1)
         hidden_unit = len(filter_sizes) * num_filters
-        pooled_concat = tf.reshape(pooled_concat, [-1, hidden_unit])
         pooled_concat = tf.nn.dropout(pooled_concat, self.keep)
-        print(pooled_concat.shape)
+        pooled_concat = tf.reshape(pooled_concat, [-1, hidden_unit])
+
 
         with tf.name_scope('output'):
             W = tf.Variable(tf.truncated_normal([hidden_unit, 6], stddev=0.1))
             b = tf.Variable(tf.constant(0.1, shape=[6]))
             self.p = tf.nn.xw_plus_b(pooled_concat, W, b)
-            self.p = tf.nn.sigmoid(self.p)
-            print(self.p.shape,self.Y.shape)

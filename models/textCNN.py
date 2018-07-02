@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-class network():
+class TextCNN():
     def __init__(self, W_list, num_filters=64):
         self.X = tf.placeholder(tf.int32, [None, 200])
         self.Y = tf.placeholder(tf.float32, [None, 6])
@@ -19,7 +19,7 @@ class network():
             W_inputs = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1))
             b_inputs = tf.Variable(tf.constant(0.0, shape=[num_filters]))
             conv_inputs = tf.nn.conv2d(inputs, W_inputs, strides=[1, 1, 1, 1], padding='VALID')
-            h_inputs = tf.nn.elu(tf.nn.bias_add(conv_inputs, b_inputs))
+            h_inputs = tf.nn.relu(tf.nn.bias_add(conv_inputs, b_inputs))
             pool = tf.nn.max_pool(h_inputs, ksize=[1, feature_length, 1, 1], strides=[1, 1, 1, 1], padding='VALID')
             pool_concat.append(pool)
 

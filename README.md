@@ -47,8 +47,8 @@ pip install -r requirements.txt
 ```
 
 ```sh
-# 运行代码，建议使用 conda 环境运行
-python train_test.py
+# 运行代码，建议使用 conda 环境运行, 可以替换 TextCNN 为 TextRNN，TextRCNN
+python train_test.py --model TextCNN
 ```
 
 

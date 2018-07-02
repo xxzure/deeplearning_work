@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-class network():
+class TextCNN():
     def __init__(self, W_list, num_filters=32):
         self.X = tf.placeholder(tf.int32, [None, 200])
         self.Y = tf.placeholder(tf.int64, [None, 6])

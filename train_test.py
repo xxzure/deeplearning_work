@@ -18,7 +18,7 @@ def get_args():
                         help='default train model name')
     parser.add_argument('--batch_size', default=256, type=int,
                         help='steps to train model over')
-    parser.add_argument('--num_epoches', default=30, type=int,
+    parser.add_argument('--num_epoches', default=10, type=int,
                         help='steps to train model over')
     parser.add_argument('--lr', default=1e-4, type=float, help='learning rate')
     parser.add_argument('--output_dir', default="output",
@@ -41,13 +41,13 @@ if __name__ == '__main__':
 
     # set the loss and optimizer
     loss = tf.reduce_mean(
-        tf.nn.softmax_cross_entropy_with_logits(logits=net.p, labels=net.Y))
+        tf.nn.sigmoid_cross_entropy_with_logits(logits=net.p, labels=net.Y))
     global_step = tf.Variable(0, name="global_step", trainable=False)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
     grads_and_vars = optimizer.compute_gradients(loss)
     train_op = optimizer.apply_gradients(
         grads_and_vars, global_step=global_step)
-    auc = tf.metrics.auc(net.Y, net.p)
+    auc = tf.metrics.auc(net.Y, tf.nn.sigmoid(net.p))
 
     # allow gpu growth increase dynamically
     config = tf.ConfigProto()
@@ -74,14 +74,13 @@ if __name__ == '__main__':
 
     # log the submission
     submission = pd.read_csv(os.path.join("data", "sample_submission.csv"))
-    test_batches = data_process.batch_iter(
-        "test", batch_size, 1, shuffle=False)
+    test_batch_size = 1118
+    test_batches = data_process.batch_iter("test", test_batch_size, 1, shuffle=False)
+    start = 0
     for batch in test_batches:
-        x_batch = zip(*batch)
+        x_batch = batch
         y_pred = sess.run(net.p, feed_dict={net.X: x_batch, net.keep: 1})
-        submission[["toxic", "severe_toxic", "obscene",
-                    "threat", "insult", "identity_hate"]] = y_pred
-
-    output_file = os.path.join(output_dir, model+"_submission.csv")
-    submission.to_csv(output_file, index=False)
+        submission.loc[start:start+test_batch_size-1, ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
+        start += test_batch_size
+    submission.to_csv('sub.csv', index=False)
     sess.close()

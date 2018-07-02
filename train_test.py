@@ -41,7 +41,8 @@ if __name__ == '__main__':
 
     # set the loss and optimizer
     loss = tf.reduce_mean(
-        tf.nn.softmax_cross_entropy_with_logits(logits=net.p, labels=net.Y))
+        tf.nn.sigmoid_cross_entropy_with_logits(logits=net.p, labels=net.Y))
+        
     global_step = tf.Variable(0, name="global_step", trainable=False)
     optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
     grads_and_vars = optimizer.compute_gradients(loss)

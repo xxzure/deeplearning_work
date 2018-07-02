@@ -4,7 +4,34 @@ import tensorflow as tf
 import numpy as np
 import copy
 
+class TextRCNN():
+    def __init__(self,W_list,num_filters=64):
+        self.X = tf.placeholder(tf.int32, [None, 200])
+        self.Y = tf.placeholder(tf.float64, [None, 6])
+        self.keep = tf.placeholder(tf.float32)
 
+        filter_sizes = [1, 2, 3, 5]
+        pool_concat = []
+        embedding = tf.Variable(initial_value=W_list, dtype=tf.float32, trainable=True)
+        embed = tf.nn.embedding_lookup(embedding, self.X)
+        inputs = tf.expand_dims(embed, -1)
+        inputs = tf.nn.dropout(inputs, keep_prob=self.keep)
+
+
+
+        pooled_concat = tf.concat(pool_concat, -1)
+        hidden_unit = len(filter_sizes) * num_filters
+        pooled_concat = tf.reshape(pooled_concat, [-1, hidden_unit])
+        pooled_concat = tf.nn.dropout(pooled_concat, self.keep)
+        print(pooled_concat.shape)
+
+        with tf.name_scope('output'):
+            W = tf.Variable(tf.truncated_normal([hidden_unit, 6], stddev=0.1))
+            b = tf.Variable(tf.constant(0.1, shape=[6]))
+            self.p = tf.nn.xw_plus_b(pooled_concat, W, b)
+            self.p = tf.nn.sigmoid(self.p)
+            print(self.p.shape,self.Y.shape)
+        
 
 class TextRCNN():
     def __init__(self,num_classes, learning_rate, batch_size, decay_steps, decay_rate,sequence_length,

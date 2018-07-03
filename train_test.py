@@ -3,14 +3,12 @@ import tensorflow as tf
 import os
 
 from models.textCNN import TextCNN
-from models.textRNN import TextRNN
-from models.textRCNN import TextRCNN
+from models.textRNN import TextRNN,TextRNN_Attention
+from models.textRCNN import TextRCNN,TextRCNN_Attention
 from data import data_process
 import argparse
 
 # hyper parameter
-
-
 def get_args():
     parser = argparse.ArgumentParser(
         description="model parameter initial value")

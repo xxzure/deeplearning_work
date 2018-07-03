@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 class TextCNN():
-    def __init__(self, W_list, num_filters=64):
-        self.X = tf.placeholder(tf.int32, [None, 200])
-        self.Y = tf.placeholder(tf.float32, [None, 6])
+    def __init__(self, W_list,num_classes=6,embedding_size=200, num_filters=64):
+        self.X = tf.placeholder(tf.int32, [None, embedding_size])
+        self.Y = tf.placeholder(tf.float32, [None, num_classes])
         self.keep = tf.placeholder(tf.float32)
 
         filter_sizes = [1, 2, 3, 5]
@@ -14,7 +14,7 @@ class TextCNN():
         inputs = tf.nn.dropout(inputs, self.keep)
 
         for filter_size in filter_sizes:
-            feature_length = 200 - filter_size + 1
+            feature_length = embedding_size - filter_size + 1
             filter_shape = [filter_size, 300, 1, num_filters]
             W_inputs = tf.Variable(tf.truncated_normal(filter_shape, stddev=0.1))
             b_inputs = tf.Variable(tf.constant(0.0, shape=[num_filters]))
@@ -30,6 +30,6 @@ class TextCNN():
 
 
         with tf.name_scope('output'):
-            W = tf.Variable(tf.truncated_normal([hidden_unit, 6], stddev=0.1))
-            b = tf.Variable(tf.constant(0.1, shape=[6]))
+            W = tf.Variable(tf.truncated_normal([hidden_unit, num_classes], stddev=0.1))
+            b = tf.Variable(tf.constant(0.1, shape=[num_classes]))
             self.p = tf.nn.xw_plus_b(pooled_concat, W, b)

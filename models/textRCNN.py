@@ -19,7 +19,8 @@ class TextRCNN(object):
         self.embedding_size = embedding_size
         self.embedding = tf.Variable(initial_value=W_list,
                                 dtype=tf.float32, trainable=True)
-        
+        # self.batch_size= tf.placeholder(tf.int32)
+
         self.instantiate_weights()
         self.p = self.inference()
 
@@ -115,18 +116,18 @@ class TextRCNN(object):
         #2. Bi-lstm layer
         output_conv = self.conv_layer_with_recurrent_structure() #shape:[batch_size,sentence_length,embed_size*3]
 
-        # print("1",output_conv.shape)
+        print("1",output_conv.shape)
         #3. non-linear layer
         output_conv = tf.matmul(tf.reshape(output_conv, [-1, self.hidden_size*3]), self.W_conv) + self.b_conv
-        # print("2",output_conv.shape)
+        print("2",output_conv.shape)
         output_conv = tf.reshape(output_conv, [-1, self.sequence_length, self.embedding_size]) # shape:[batch_size, sentence_length, embed_size]
 
-        # print("3",output_conv.shape)
+        print("3",output_conv.shape)
         #4. max pooling
         #print("output_conv:",output_conv) #(3, 5, 8, 100)
         output_pooling = tf.reduce_max(output_conv,axis=1) #shape:[batch_size,embed_size]
         #print("output_pooling:",output_pooling) #(3, 8, 100)
-        # print("4",output_pooling.shape)
+        print("4",output_pooling.shape)
         #5. logits(use linear layer)
         with tf.name_scope("dropout"):
             h_drop=tf.nn.dropout(output_pooling, keep_prob=self.keep) #[batch_size,num_filters_total]

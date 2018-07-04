@@ -33,12 +33,14 @@ class TextRCNN(object):
         outputs, _ = tf.nn.bidirectional_dynamic_rnn(
             lstm_fw_cell, lstm_bw_cell, inputs, dtype=tf.float32)
 
-        # conv1d layer
-        outputs= tf.nn.conv1d(outputs, 96,stride=1, padding='VALID')
-
         # concat layer
         # output: [batch_size,sequence_length,hidden_size*2]
         output_rnn=tf.concat(outputs,axis=2)  
+
+        # conv1d layer
+        print(output_rnn.shape)
+        filters = tf.zeros([3, self.hidden_size*2, self.hidden_size*2]) 
+        output_rnn= tf.nn.conv1d(output_rnn, filters,stride=2, padding='VALID')
 
         # get last state
         # output:[batch_size,hidden_size*2]

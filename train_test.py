@@ -14,11 +14,11 @@ def get_args():
         description="model parameter initial value")
     parser.add_argument('--model', default="TextCNN", type=str,
                         help='default train model name')
-    parser.add_argument('--batch_size', default=197, type=int,
+    parser.add_argument('--batch_size', default=512, type=int,
                         help='steps to train model over')
-    parser.add_argument('--num_epoches', default=4, type=int,
+    parser.add_argument('--num_epoches', default=30, type=int,
                         help='steps to train model over')
-    parser.add_argument('--lr', default=1e-4, type=float, help='learning rate')
+    parser.add_argument('--lr', default=1e-3, type=float, help='learning rate')
     parser.add_argument('--output_dir', default="output",
                         type=str, help='output submission folder')
     return parser.parse_args()
@@ -29,6 +29,7 @@ if __name__ == '__main__':
     args = get_args()
     learning_rate = args.lr
     batch_size = args.batch_size
+    #143613 total dataset
     num_epoches = args.num_epoches
     output_dir = args.output_dir
     model = args.model
@@ -59,23 +60,27 @@ if __name__ == '__main__':
     print("Loading data")
     train_batches = data_process.batch_iter("train", batch_size, num_epoches)
     print("Loading data Success")
-    num_batches_per_epoch = int((len(data_process.X_tra) - 1) / batch_size) + 1
+    num_batches_per_epoch = int((len(data_process.X_tra) - 1) / batch_size)
     for batch in train_batches:
         x_batch, y_batch = zip(*batch)
-        print("Testing 1")
-        _, step, batch_loss, auc_value = sess.run([train_op, global_step, loss, auc], feed_dict={net.X: x_batch, net.Y: y_batch, net.keep: 0.4})
+
+        if len(x_batch)!=batch_size:
+            print("Bug here")
+            continue
+        _, step, batch_loss, auc_value = sess.run([train_op, global_step, loss, auc], feed_dict={net.X: x_batch, net.Y: y_batch, net.keep: 0.5})
         current_step = tf.train.global_step(sess, global_step)
-        print("Testing 2",current_step)
+        if current_step%10==0:
+            print("Step",current_step)
         if current_step % num_batches_per_epoch == 0:
-            print("epoch:{:0f}, train-loss:{:4f}, auc:{:4f}".format(current_step / num_batches_per_epoch, batch_loss,  auc_value[0]))
-            x_valid, y_valid = data_process.X_val, data_process.y_val
-            step, val_batch_loss, auc_value = sess.run([global_step, loss, auc], feed_dict={
-                                                       net.X: x_valid, net.Y: y_valid, net.keep: 1})
-            print("val-loss:{:4f}, auc:{:4f}".format(batch_loss,auc_value[0]))
+            print("epoch:{:0f}, train-loss:{:4f}, auc".format(current_step / num_batches_per_epoch, batch_loss),  auc_value)
+            # x_valid, y_valid = data_process.X_val, data_process.y_val
+            # step, val_batch_loss, auc_value = sess.run([global_step, loss, auc], feed_dict={
+            #                                            net.X: x_valid, net.Y: y_valid, net.keep: 1})
+            # print("val-loss:{:4f}, auc:{:4f}".format(batch_loss,auc_value))
 
     # log the submission
     submission = pd.read_csv(os.path.join("data", "sample_submission.csv"))
-    test_batch_size = 1118
+    test_batch_size = batch_size
     test_batches = data_process.batch_iter("test", test_batch_size, 1, shuffle=False)
     start = 0
     for batch in test_batches:

@@ -19,7 +19,7 @@ class TextRCNN(object):
         self.embedding_size = embedding_size
         self.embedding = tf.Variable(initial_value=W_list,
                                 dtype=tf.float32, trainable=True)
-
+        
         self.instantiate_weights()
         self.p = self.inference()
 

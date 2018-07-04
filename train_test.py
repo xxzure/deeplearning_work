@@ -16,7 +16,7 @@ def get_args():
                         help='default train model name')
     parser.add_argument('--batch_size', default=256, type=int,
                         help='steps to train model over')
-    parser.add_argument('--num_epoches', default=20, type=int,
+    parser.add_argument('--num_epoches', default=4, type=int,
                         help='steps to train model over')
     parser.add_argument('--lr', default=1e-4, type=float, help='learning rate')
     parser.add_argument('--output_dir', default="output",
@@ -61,7 +61,7 @@ if __name__ == '__main__':
     for batch in train_batches:
         x_batch, y_batch = zip(*batch)
         _, step, batch_loss, auc_value = sess.run([train_op, global_step, loss, auc], feed_dict={
-                                                  net.X: x_batch, net.Y: y_batch, net.keep: 0.5})
+                                                  net.X: x_batch, net.Y: y_batch, net.keep: 0.4})
         current_step = tf.train.global_step(sess, global_step)
         if current_step % num_batches_per_epoch == 0:
             print("epoch:{:0f}, train-loss:{:4f}, auc:{:4f}".format(current_step / num_batches_per_epoch, batch_loss,  auc_value))
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     start = 0
     for batch in test_batches:
         x_batch = batch
-        y_pred = sess.run(net.p, feed_dict={net.X: x_batch, net.keep: 1})
+        y_pred = sess.run(tf.nn.sigmoid(net.p), feed_dict={net.X: x_batch, net.keep: 1})
         submission.loc[start:start+test_batch_size-1, ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
         start += test_batch_size
     submission.to_csv('sub.csv', index=False)

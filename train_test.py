@@ -101,12 +101,11 @@ if __name__ == '__main__':
                 val_x_batch,val_y_batch=sess.run(next_element_val)
                 feed_dict_val={net.X: val_x_batch, net.Y: val_y_batch, net.keep: 1}
                 val_batch_loss, val_auc_value=sess.run([loss, auc], feed_dict=feed_dict_val)
-                val_loss+=val_batch_loss
-                val_acc+=val_auc_value[0]
-            val_loss/=num_batches_per_epoch_val
-            val_acc/=num_batches_per_epoch_val
-
-            print("val-loss:{:4f}, auc:".format(val_loss),val_loss)
+            #     val_loss+=val_batch_loss
+            #     val_acc+=val_auc_value[0]
+            # val_loss/=num_batches_per_epoch_val
+            # val_acc/=num_batches_per_epoch_val
+            print("val-loss:{:4f}, auc:".format(val_batch_loss),val_auc_value)
 
     # log the submission
     submission = pd.read_csv(os.path.join("data", "sample_submission.csv"))

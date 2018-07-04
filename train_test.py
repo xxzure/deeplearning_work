@@ -3,8 +3,8 @@ import tensorflow as tf
 import os
 
 from models.textCNN import TextCNN
-from models.textRNN import TextRNN,TextRNN_Attention
-from models.textRCNN import TextRCNN,TextRCNN_Attention
+from models.textRNN import TextRNN
+from models.textRCNN import TextRCNN
 from data import data_process
 import argparse
 
@@ -14,9 +14,9 @@ def get_args():
         description="model parameter initial value")
     parser.add_argument('--model', default="TextCNN", type=str,
                         help='default train model name')
-    parser.add_argument('--batch_size', default=256, type=int,
+    parser.add_argument('--batch_size', default=20, type=int,
                         help='steps to train model over')
-    parser.add_argument('--num_epoches', default=20, type=int,
+    parser.add_argument('--num_epoches', default=3, type=int,
                         help='steps to train model over')
     parser.add_argument('--lr', default=1e-4, type=float, help='learning rate')
     parser.add_argument('--output_dir', default="output",
@@ -56,7 +56,9 @@ if __name__ == '__main__':
     sess.run(tf.local_variables_initializer())
 
     # training
+    print("Loading data")
     train_batches = data_process.batch_iter("train", batch_size, num_epoches)
+    print("Loading data Success")
     num_batches_per_epoch = int((len(data_process.X_tra) - 1) / batch_size) + 1
     for batch in train_batches:
         x_batch, y_batch = zip(*batch)
@@ -68,7 +70,7 @@ if __name__ == '__main__':
             x_valid, y_valid = data_process.X_val, data_process.y_val
             step, val_batch_loss, auc_value = sess.run([global_step, loss, auc], feed_dict={
                                                        net.X: x_valid, net.Y: y_valid, net.keep: 1})
-            print("val-loss:{:4f}, auc:{:4f}".format(batch_loss, auc_value))
+            print("val-loss:,",batch_loss,"auc:", auc_value)
 
     # log the submission
     submission = pd.read_csv(os.path.join("data", "sample_submission.csv"))
@@ -77,7 +79,7 @@ if __name__ == '__main__':
     start = 0
     for batch in test_batches:
         x_batch = batch
-        y_pred = sess.run(net.p, feed_dict={net.X: x_batch, net.keep: 1})
+        y_pred = sess.run(tf.nn.sigmoid(net.p), feed_dict={net.X: x_batch, net.keep: 1})
         submission.loc[start:start+test_batch_size-1, ["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]] = y_pred
         start += test_batch_size
     submission.to_csv('sub.csv', index=False)

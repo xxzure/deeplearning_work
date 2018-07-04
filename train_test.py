@@ -14,7 +14,7 @@ def get_args():
         description="model parameter initial value")
     parser.add_argument('--model', default="TextCNN", type=str,
                         help='default train model name')
-    parser.add_argument('--batch_size', default=32, type=int,
+    parser.add_argument('--batch_size', default=197, type=int,
                         help='steps to train model over')
     parser.add_argument('--num_epoches', default=4, type=int,
                         help='steps to train model over')
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     # initilize the model
     W_list = data_process.get_embedding()
-    net = eval(model)(W_list)
+    net = eval(model)(W_list,batch_size=batch_size)
 
     # set the loss and optimizer
     loss = tf.reduce_mean(
@@ -61,13 +61,11 @@ if __name__ == '__main__':
     print("Loading data Success")
     num_batches_per_epoch = int((len(data_process.X_tra) - 1) / batch_size) + 1
     for batch in train_batches:
-        print("Testing 1")
         x_batch, y_batch = zip(*batch)
-        print("Testing 2")
+        print("Testing 1")
         _, step, batch_loss, auc_value = sess.run([train_op, global_step, loss, auc], feed_dict={net.X: x_batch, net.Y: y_batch, net.keep: 0.4})
-        print("Testing 3")
         current_step = tf.train.global_step(sess, global_step)
-        print("Testing 4",current_step)
+        print("Testing 2",current_step)
         if current_step % num_batches_per_epoch == 0:
             print("epoch:{:0f}, train-loss:{:4f}, auc:{:4f}".format(current_step / num_batches_per_epoch, batch_loss,  auc_value[0]))
             x_valid, y_valid = data_process.X_val, data_process.y_val

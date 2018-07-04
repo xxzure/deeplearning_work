@@ -6,13 +6,15 @@ import numpy as np
 
 
 class TextRNN(object):
-    def __init__(self, W_list, num_classes=6, embedding_size=200, hidden_size=150):
-        self.X = tf.placeholder(tf.int32, [None, embedding_size])
+    def __init__(self, W_list, num_classes=6, max_len=200, hidden_size=150,batch_size=256):
+        self.X = tf.placeholder(tf.int32, [None, max_len])
         self.Y = tf.placeholder(tf.float32, [None, num_classes])
         self.keep = tf.placeholder(tf.float32)
-        self.embedding_size = embedding_size
+        self.max_len = max_len
         self.hidden_size = hidden_size
         self.num_classes = num_classes
+        self.batch_size=batch_size
+
 
         # embedding layer
         embedding = tf.Variable(initial_value=W_list,

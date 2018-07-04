@@ -8,8 +8,14 @@ import sys
 
 module_path = os.path.dirname(__file__)
 
+# train_en = pd.read_csv(os.path.join(module_path,'train.csv'))
+# train_de = pd.read_csv(os.path.join(module_path,'train_de.csv'))
+# train_es = pd.read_csv(os.path.join(module_path,'train_es.csv'))
+# train_fr = pd.read_csv(os.path.join(module_path,'train_fr.csv'))
+# train_csv_list = [train_en, train_de, train_es, train_fr]
+# train = pd.concat(train_csv_list)
 train = pd.read_csv(os.path.join(module_path,'train.csv'))
-test = pd.read_csv( os.path.join(module_path,'test.csv'))
+test = pd.read_csv(os.path.join(module_path,'test.csv'))
 
 X_train = train["comment_text"].fillna("fillna").values
 y_train = train[["toxic", "severe_toxic", "obscene", "threat", "insult", "identity_hate"]].values
@@ -26,7 +32,7 @@ X_test = tokenizer.texts_to_sequences(X_test)
 x_train = tf.keras.preprocessing.sequence.pad_sequences(X_train, maxlen=maxlen)
 x_test = tf.keras.preprocessing.sequence.pad_sequences(X_test, maxlen=maxlen)
 
-X_tra, X_val, y_tra, y_val = train_test_split(x_train, y_train, train_size=0.9, random_state=10)
+X_tra, X_val, y_tra, y_val = train_test_split(x_train, y_train, train_size=0.95, random_state=10)
 
 def batch_iter(mode, batch_size, num_epochs, shuffle=True):
     if mode == "train":

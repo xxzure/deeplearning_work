@@ -16,7 +16,7 @@ def get_args():
                         help='default train model name')
     parser.add_argument('--batch_size', default=20, type=int,
                         help='steps to train model over')
-    parser.add_argument('--num_epoches', default=3, type=int,
+    parser.add_argument('--num_epoches', default=4, type=int,
                         help='steps to train model over')
     parser.add_argument('--lr', default=1e-4, type=float, help='learning rate')
     parser.add_argument('--output_dir', default="output",
@@ -62,15 +62,14 @@ if __name__ == '__main__':
     num_batches_per_epoch = int((len(data_process.X_tra) - 1) / batch_size) + 1
     for batch in train_batches:
         x_batch, y_batch = zip(*batch)
-        _, step, batch_loss, auc_value = sess.run([train_op, global_step, loss, auc], feed_dict={
-                                                  net.X: x_batch, net.Y: y_batch, net.keep: 0.5})
+        _, step, batch_loss, auc_value = sess.run([train_op, global_step, loss, auc], feed_dict={net.X: x_batch, net.Y: y_batch, net.keep: 0.4})
         current_step = tf.train.global_step(sess, global_step)
         if current_step % num_batches_per_epoch == 0:
             print("epoch:{:0f}, train-loss:{:4f}, auc:{:4f}".format(current_step / num_batches_per_epoch, batch_loss,  auc_value))
             x_valid, y_valid = data_process.X_val, data_process.y_val
             step, val_batch_loss, auc_value = sess.run([global_step, loss, auc], feed_dict={
                                                        net.X: x_valid, net.Y: y_valid, net.keep: 1})
-            print("val-loss:,",batch_loss,"auc:", auc_value)
+            print("val-loss:{:4f}, auc:{:4f}".format(batch_loss,auc_value))
 
     # log the submission
     submission = pd.read_csv(os.path.join("data", "sample_submission.csv"))
